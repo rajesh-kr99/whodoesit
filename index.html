@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WhoDoesIt</title>
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --card:#12141b;
+      --muted:#9aa3b2;
+      --text:#e8ecf3;
+      --good:#2bd576;
+      --bad:#ff5b5b;
+      --ring:#2a2f3a;
+      --btn:#2f6df6;
+      --btn2:#1c2030;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html, body {
+      margin: 0;
+      overflow: hidden;
+    }
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% -10%, #1b1f2a 0%, transparent 60%),
+                  radial-gradient(900px 700px at 110% 10%, #1b2337 0%, transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+    .app{
+      width:min(980px,100%);
+      height: 100vh;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:18px;
+    }
+    @media (max-width: 920px){
+      .app{grid-template-columns:1fr; }
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .pad{padding:18px}
+    .header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px 18px 8px 18px;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      text-transform: lowercase;
+    }
+    .brand p{
+      margin:0;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      color: var(--muted);
+    }
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.08);
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
+    select, input, textarea{
+      width:100%;
+      background:#0f1118;
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 12px;
+      outline:none;
+    }
+    input::placeholder, textarea::placeholder{color:#707b8e}
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){
+      .two{grid-template-columns:1fr}
+    }
+
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:13px;
+    }
+    .chip button{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+      font-size:16px;
+      line-height:1;
+      padding:0;
+    }
+    .chip button:hover{color:var(--text)}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    button{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:650;
+      cursor:pointer;
+      color:var(--text);
+      background: var(--btn2);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    button.primary{
+      background: linear-gradient(180deg, rgba(47,109,246,1), rgba(31,77,196,1));
+      border:1px solid rgba(255,255,255,.14);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    
+    button.primary:active{
+      transform: scale(0.96);
+    }
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+    .hint{color:var(--muted); font-size:12px; margin-top:6px}
+
+    /* Wheel area */
+    .wheelWrap{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:18px;
+      align-items:center;
+    }
+    canvas{
+      width:100%;
+      max-width:340px;   /* ~10–12% smaller */
+      aspect-ratio: 1 / 1;
+      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.06), rgba(255,255,255,0));
+      border-radius:999px;
+    }
+    .pointer{
+      position:absolute;
+      top:18px;
+      left:50%;
+      transform:translateX(-50%);
+      width:0;height:0;
+      border-left:12px solid transparent;
+      border-right:12px solid transparent;
+      border-top:18px solid #ffd36a;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.45));
+    }
+    .result{
+      width:100%;
+      max-width:380px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.22);
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:8px;
+    }
+    .result strong{font-size:15px}
+    .subtle{
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+      max-width:380px;
+    }
+
+    .footer{
+      padding:0 18px 16px 18px;
+      color:rgba(154,163,178,.85);
+      font-size:12px;
+      text-align:center;
+    }
+
+    /* Pointer wobble */
+    .pointer {
+      transform-origin: 50% 0%;
+    }
+    @keyframes pointerWobble {
+      0%   { transform: translateX(-50%) rotate(0deg); }
+      20%  { transform: translateX(-50%) rotate(8deg); }
+      45%  { transform: translateX(-50%) rotate(-10deg); }
+      70%  { transform: translateX(-50%) rotate(6deg); }
+      100% { transform: translateX(-50%) rotate(0deg); }
+    }
+    .pointer.wobble {
+      animation: pointerWobble 260ms ease-out;
+    }
+
+    .wheelStage { position: relative; width: 100%; display:flex; justify-content:center; }
+    .pointer { top: 0; } /* relative to wheelStage now */
+    
+    .wheelWrap{
+      padding-bottom:14px;
+    }
+
+    /* Subtle text swap animation for Spin button */
+    .spinBtn-animate {
+      animation: spinTextSwap 180ms ease-out;
+    }
+
+    @keyframes spinTextSwap {
+      0%   { transform: scale(1); opacity: 1; }
+      45%  { transform: scale(0.92); opacity: 0.65; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Header row for "Add a name" */
+    .fieldHead{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    /* Buttons beside label */
+    .fieldActions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    /* Smaller buttons for inline actions */
+    .smallBtn{
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:650;
+    }
+
+    /* Tip sits below input */
+    .tipBelow{
+      margin-top:8px;
+    }
+
+    /* Inline field same size as Question */
+    .inlineField{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    /* Match Question input height */
+    .inlineField input{
+      flex:1;
+      height:44px;              /* same visual height as select */
+      padding:10px 12px;
+    }
+
+    /* Small inline buttons */
+    .inlineBtn{
+      height:44px;
+      padding:0 14px;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:650;
+      white-space:nowrap;
+    }
+
+    /* Secondary style for Clear */
+    .inlineBtn.ghost{
+      background: var(--btn2);
+      opacity:.85;
+    }
+
+    .minNote{
+      font-size:12px;
+      font-weight:500;
+      color:var(--muted);
+      margin-left:6px;
+    }
+
+    /* Mobile fit: keep wheel + SPIN + result visible without scrolling */
+    @media (max-width: 520px){
+      canvas{
+        /* was max-width:340px; */
+        max-width: clamp(260px, 72vw, 320px);
+      }
+
+      .wheelWrap{
+        padding-top: 14px;
+        padding-bottom: 10px;
+        gap: 8px;
+      }
+
+      /* Make the SPIN button slightly shorter on small screens */
+      button.primary{
+        padding: 10px 14px;
+        font-size: 14px;
+        letter-spacing: 1px;
+      }
+
+      /* Result box: a bit tighter */
+      .result{
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      /* Question line above wheel: keep it compact */
+      #questionLine{
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+    }
+
+    @media (max-width: 520px) and (max-height: 740px){
+      canvas{ max-width: clamp(240px, 68vw, 300px); }
+    }
+
+    /* Flip/short-viewport phones: size the wheel by HEIGHT so controls below stay visible */
+    @media (max-width: 520px){
+
+      .wheelWrap{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-top: 10px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      }
+
+      /* Key change: wheel size uses dvh (dynamic viewport height) */
+      canvas{
+        width: min(74vw, 37dvh);   /* <-- makes wheel smaller when height is tight */
+        max-width: none;           /* let width rule drive it */
+        aspect-ratio: 1 / 1;
+      }
+
+      /* Tighten the button row so it fits */
+      .btnrow{
+        margin-top: 4px;
+        gap: 8px;
+      }
+
+      /* Slightly smaller primary button */
+      button.primary{
+        height: 40px;
+        padding: 0 14px;
+        font-size: 13px;
+        letter-spacing: 0.9px;
+      }
+
+      /* Result box smaller */
+      .result{
+        min-height: 40px;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      /* Question text above wheel: compact */
+      #questionLine{
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      /* If you still have 2 buttons, allow them to wrap */
+      .btnrow button{
+        flex: 1;
+      }
+    }
+
+    /* Mobile: don't vertically center the whole app (prevents wheel card from drifting down) */
+    @media (max-width: 920px){
+      body{
+        align-items: flex-start;
+        justify-content: center; /* keep horizontal center */
+        padding-top: 12px;
+      }
+
+      .app{
+        height: auto;          /* stop forcing 100vh behavior on stacked layout */
+        max-height: none;
+      }
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 520px){
+      .chips{
+        max-height: 92px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 6px;
+      }
+    }
+
+    /* Mobile: keep Question + Custom verb in 2 columns */
+    @media (max-width: 520px){
+      .two{
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      /* Prevent inputs from forcing overflow */
+      .two > div { min-width: 0; }
+      #customAction, #actionSelect { min-width: 0; }
+    }
+
+    /* Mobile: allow scrolling so stacked layout works correctly */
+    @media (max-width: 520px){
+      html, body{
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+    }
+
+    @media (max-width: 520px){
+      body{
+        scroll-behavior: smooth;
+      }
+    }
+
+    .pill{
+      max-width: 100%;
+      white-space: normal;
+      text-align: center;
+    }
+    body{
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body>
+  <main class="app" role="main">
+    <!-- LEFT: Controls -->
+    <section class="card">
+      <div class="header">
+        <div class="brand">
+          <h1>WhoDoesIt <em style="font-size:10px;">let fate decide</em></h1>
+        </div>
+      </div>
+
+      <div class="pad" style="padding-top:0">
+        <div class="pill" style="text-align:center; width:100%; font-size: calc(1em - 3px);">
+          No tracking. No thinking. Just quick decisions
+        </div>
+      </div>
+
+      <div class="pad">
+        <div class="two">
+          <div>
+            <label for="actionSelect">Question</label>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span>Who</span>
+              <select id="actionSelect">
+                <option value="pays">pays</option>
+              <option value="drives">drives</option>
+              <option value="orders food">orders food</option>
+              <option value="picks the movie">picks the movie</option>
+              <option value="hosts next time">hosts next time</option>
+              <option value="cleans up">cleans up</option>
+              <option value="goes first">goes first</option>
+              <option value="custom">Custom…</option>
+              </select>
+              <span>?</span>
+            </div>
+          </div>
+          <div>
+            <label for="customAction">Custom verb</label>
+            <input id="customAction" type="text" placeholder="e.g., chooses food" />
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <label for="nameInput">
+            Add a name
+            <span class="minNote">(at least 2 names required)</span>
+          </label>
+
+          <!-- Input + buttons inline -->
+          <div class="inlineField">
+            <input
+              id="nameInput"
+              type="text"
+              placeholder="Type a name"
+            />
+
+            <button id="addBtn" type="button" class="inlineBtn">
+              Add
+            </button>
+
+            <button id="clearBtn" type="button" class="inlineBtn ghost">
+              Clear
+            </button>
+          </div>
+
+          <div class="hint">Tip: press <strong>Enter</strong> to add quickly.</div>
+
+          <!-- Names appear directly below -->
+          <div class="chips" id="chips"></div>
+        </div>
+      </div>
+
+
+      
+
+
+    </section>
+
+    <!-- RIGHT: Wheel -->
+    <section class="card wheelWrap">
+      <div class="subtle" id="questionLine">Who <strong>pays</strong>?</div>
+
+      <div class="wheelStage">
+        <div class="pointer" aria-hidden="true"></div>
+        <canvas id="wheel" width="900" height="900"></canvas>
+      </div>
+
+      <div class="result" id="result">Ready. Hit <strong>SPIN</strong>.</div>
+
+      <div class="btnrow" style="justify-content:center; margin-top:6px;">
+        <button class="primary" id="spinBtn">SPIN</button>
+      </div>
+    </section>
+  </main>
+
+<script>
+(() => {
+  const actionSelect = document.getElementById('actionSelect');
+  const customAction = document.getElementById('customAction');
+  const questionLine = document.getElementById('questionLine');
+
+  const nameInput = document.getElementById('nameInput');
+  const addBtn = document.getElementById('addBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const chipsEl = document.getElementById('chips');
+
+  const spinBtn = document.getElementById('spinBtn');
+  const spinAgainBtn = document.getElementById('spinAgainBtn');
+  const changeNamesBtn = document.getElementById('changeNamesBtn');
+  const minHint = document.getElementById('minHint');
+
+  const resultEl = document.getElementById('result');
+
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  const pointerEl = document.querySelector('.pointer');
+
+  let names = [];
+  let spinning = false;
+  let hasSpun = false;
+
+  // wheel rotation state (radians)
+  let rotation = 0;
+
+  // ---------- helpers ----------
+  function getAction(){
+    if (actionSelect.value === 'custom') {
+      const v = (customAction.value || '').trim();
+      return v.length ? v : 'does it';
+    }
+    return actionSelect.value;
+  }
+
+  function setQuestionLine(){
+    const action = escapeHtml(getAction());
+    questionLine.innerHTML = `Who <strong>${action}</strong>?`;
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function normalizedName(s){
+    return s.trim().replace(/\s+/g,' ');
+  }
+
+  function updateButtons(){
+    const ok = names.length >= 2 && !spinning;
+    spinBtn.disabled = !ok;
+
+    addBtn.disabled = spinning;
+    clearBtn.disabled = spinning || names.length === 0;
+
+    actionSelect.disabled = spinning;
+
+    // ✅ only disable customAction when NOT custom, or while spinning
+    const isCustom = actionSelect.value === 'custom';
+    customAction.disabled = spinning || !isCustom;
+
+    // don't touch spinBtn.textContent here
+  }
+
+  function renderChips(){
+    chipsEl.innerHTML = '';
+    names.forEach((n, idx) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `<span>${escapeHtml(n)}</span>`;
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.textContent = '×';
+      x.title = 'Remove';
+      x.addEventListener('click', () => {
+        if(spinning) return;
+        names.splice(idx, 1);
+        renderChips();
+        drawWheel();
+        updateButtons();
+        if(names.length < 2){
+          resultEl.innerHTML = `<span style="opacity:.9">Add at least 2 names, then spin.</span>`;
+        }
+      });
+      chip.appendChild(x);
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  // ---------- effects: tick sound ----------
+  let audioCtx = null;
+  function ensureAudio(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function tickSound(intensity = 1){
+    // no audio until user gesture triggers AudioContext (spin/click)
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    const now = audioCtx.currentTime;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    // "tick" = short clicky blip
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(900 + Math.random()*200, now);
+
+    const a = 0.0005;
+    const d = 0.02;
+    const vol = 0.07 * Math.max(0.35, Math.min(1.2, intensity));
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + a);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + d);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(now);
+    osc.stop(now + d + 0.01);
+  }
+
+  function pointerWobble(){
+    if(!pointerEl) return;
+    // restart animation cleanly
+    pointerEl.classList.remove('wobble');
+    // force reflow so animation restarts
+    void pointerEl.offsetWidth;
+    pointerEl.classList.add('wobble');
+  }
+
+  function clunkSound(intensity = 1){
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    const now = audioCtx.currentTime;
+
+    // low "thud" + quick click
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(140, now);
+    osc.frequency.exponentialRampToValueAtTime(70, now + 0.08);
+
+    const vol = 0.16 * Math.max(0.5, Math.min(1.3, intensity));
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.14);
+  }
+
+  function setSpinLabel(text){
+    if (spinBtn.textContent === text) return;
+
+    spinBtn.classList.remove('spinBtn-animate');
+    void spinBtn.offsetWidth; // force reflow so animation restarts
+    spinBtn.textContent = text;
+    spinBtn.classList.add('spinBtn-animate');
+  }
+
+  function wheelSettle(finalRotation, onDraw, onDone){
+    // tiny realistic wiggle after stop
+    const t0 = performance.now();
+    const dur = 220;          // short
+    const amp = 0.055;        // radians (~3 degrees)
+    const freq = 22;          // wiggles
+
+    function frame(now){
+      const t = Math.min(1, (now - t0) / dur);
+      // quickly decaying sinusoid
+      const decay = (1 - t) * (1 - t);
+      const wiggle = Math.sin(t * freq) * amp * decay;
+
+      rotation = finalRotation + wiggle;
+      onDraw();
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        rotation = finalRotation;
+        onDraw();
+        onDone?.();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- effects: confetti overlay ----------
+  // We reuse the same canvas by drawing particles on top after wheel draw.
+  const confetti = {
+    active: false,
+    parts: [],
+    t0: 0,
+    dur: 1400
+  };
+
+  function confettiBurst(){
+    const w = canvas.width, h = canvas.height;
+    confetti.active = true;
+    confetti.parts = [];
+    confetti.t0 = performance.now();
+
+    const count = 140;
+    for(let i=0;i<count;i++){
+      confetti.parts.push({
+        x: w/2 + (Math.random()-0.5)*80,
+        y: h*0.22 + (Math.random()-0.5)*40,
+        vx: (Math.random()-0.5)*14,
+        vy: -Math.random()*10 - 6,
+        g: 0.55 + Math.random()*0.35,
+        r: 4 + Math.random()*7,
+        rot: Math.random()*Math.PI*2,
+        vr: (Math.random()-0.5)*0.25,
+        life: 0.6 + Math.random()*0.55,
+        // color: randomized but without hard-coded palette
+        hue: Math.floor(Math.random()*360),
+        sat: 70 + Math.random()*20,
+        lum: 55 + Math.random()*15
+      });
+    }
+  }
+
+  function drawConfetti(now){
+    if(!confetti.active) return;
+
+    const t = (now - confetti.t0) / confetti.dur;
+    if(t >= 1){
+      confetti.active = false;
+      confetti.parts = [];
+      return;
+    }
+
+    const w = canvas.width, h = canvas.height;
+    const fade = 1 - t;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = Math.max(0, fade);
+
+    for(const p of confetti.parts){
+      // integrate
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+
+      // mild drag
+      p.vx *= 0.99;
+      p.vy *= 0.99;
+
+      // draw
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = `hsl(${p.hue} ${p.sat}% ${p.lum}%)`;
+      ctx.fillRect(-p.r, -p.r*0.55, p.r*2, p.r*1.1);
+      ctx.restore();
+    }
+
+    ctx.restore();
+  }
+
+  // ---------- wheel drawing ----------
+  function drawWheel(highlightIndex = -1){
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2;
+    const r = Math.min(w,h)*0.44;
+
+    ctx.clearRect(0,0,w,h);
+
+    // base ring
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // outer glow
+    ctx.beginPath();
+    ctx.arc(0,0,r+34,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fill();
+
+    // background circle
+    ctx.beginPath();
+    ctx.arc(0,0,r+18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.20)';
+    ctx.fill();
+
+    const n = Math.max(names.length, 2);
+    const slice = (Math.PI * 2) / n;
+
+    // rotate for current spin state
+    ctx.rotate(rotation);
+
+    for(let i=0;i<n;i++){
+      const start = i * slice;
+      const end = start + slice;
+
+      // alternate slice shading
+      const isAlt = i % 2 === 0;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0,r,start,end);
+      ctx.closePath();
+      ctx.fillStyle = isAlt ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)';
+      ctx.fill();
+
+      // highlight winner slice
+      if(i === highlightIndex){
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.arc(0,0,r,start,end);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 211, 106, 0.18)';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // slice border
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // text
+      const label = names[i] || `Name ${i+1}`;
+      const angle = start + slice/2;
+      ctx.save();
+      ctx.rotate(angle);
+      ctx.translate(r*0.66, 0);
+      ctx.rotate(Math.PI/2);
+
+      ctx.fillStyle = 'rgba(232,236,243,0.92)';
+      ctx.font = '700 34px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // truncate long
+      const max = 14;
+      const t = label.length > max ? label.slice(0, max-1) + '…' : label;
+      ctx.fillText(t, 0, 0);
+
+      ctx.restore();
+    }
+
+    // center hub
+    ctx.save();
+    ctx.rotate(-rotation);
+    ctx.beginPath();
+    ctx.arc(0,0,r*0.18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(232,236,243,0.85)';
+    ctx.font = '800 34px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SPIN', 0, 0);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // ---------- spin logic ----------
+  // Pointer is at top. Canvas angle 0 points to the right, so top is -90deg.
+  // We want the chosen slice's center to land at pointer angle (-90deg) after rotation.
+  function spin(){
+    if(spinning || names.length < 2) return;
+
+    // unlock audio on user gesture
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    spinning = true;
+    updateButtons();
+
+    const n = names.length;
+    const slice = (Math.PI*2) / n;
+
+    const chosenIndex = Math.floor(Math.random() * n);
+
+    const chosenCenter = chosenIndex * slice + slice/2;
+    const pointerAngle = -Math.PI/2; // top
+
+    // target rotation (mod 2π)
+    let target = pointerAngle - chosenCenter;
+
+    // extra spins for drama
+    const extraSpins = 7 + Math.floor(Math.random() * 5); // 7..11
+    target += extraSpins * Math.PI * 2;
+
+    const start = rotation;
+    const end = target;
+
+    const duration = 2550 + Math.floor(Math.random()*650); // ~2.6..3.2s
+    const t0 = performance.now();
+
+    // ticks
+    let lastTickSlice = 0;
+
+    resultEl.innerHTML = `<span style="opacity:.9">Spinning…</span>`;
+
+    // easing with bounce at end
+    function easeOutBack(t){
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+    function frame(now){
+      const t = clamp01((now - t0) / duration);
+      const e = easeOutBack(t);
+      rotation = start + (end - start) * e;
+
+      // tick whenever we pass into a new slice boundary near the pointer
+      // compute which slice is currently under the pointer
+      const current = ((rotation % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
+      // pointer sees angle = pointerAngle, so wheel angle under pointer = (pointerAngle - rotation) mod 2π
+      const underPointer = ((pointerAngle - current) + Math.PI*2) % (Math.PI*2);
+      const sliceIndexAtPointer = Math.floor(underPointer / slice);
+
+      if(sliceIndexAtPointer !== lastTickSlice){
+        // intensity follows speed: early loud, later softer
+        const intensity = 0.4 + (1 - t) * 0.9;
+        tickSound(intensity);
+        pointerWobble();
+        lastTickSlice = sliceIndexAtPointer;
+      }
+
+      drawWheel(); // no highlight during spin
+
+      // confetti can animate on top (if active)
+      drawConfetti(now);
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        // normalize rotation
+        rotation = ((rotation % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
+
+        drawWheel(chosenIndex);
+
+        const action = escapeHtml(getAction());
+        const winner = escapeHtml(names[chosenIndex]);
+
+        resultEl.innerHTML = `🎯 <strong>${winner}</strong> ${action}.`;
+        setQuestionLine();
+
+        // celebrate!
+        confettiBurst();
+        clunkSound(1.0); // final clunk
+        pointerWobble();
+
+        const finalRotation = rotation;
+
+        wheelSettle(
+          finalRotation,
+          () => {
+            // keep winner highlight visible during settle
+            drawWheel(chosenIndex);
+            // keep confetti animating on top if active
+            drawConfetti(performance.now());
+          },
+          () => {
+            // final clean draw
+            drawWheel(chosenIndex);
+          }
+        );
+
+        hasSpun = true;
+        setSpinLabel('SPIN AGAIN');
+        
+        spinning = false;
+        updateButtons();
+
+        // animate confetti for its duration
+        const endT = performance.now() + confetti.dur;
+        const confettiLoop = (nnow) => {
+          // redraw wheel with highlight, then confetti
+          drawWheel(chosenIndex);
+          drawConfetti(nnow);
+          if(confetti.active && nnow < endT){
+            requestAnimationFrame(confettiLoop);
+          } else {
+            // final clean draw
+            drawWheel(chosenIndex);
+          }
+        };
+        requestAnimationFrame(confettiLoop);
+      }
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- events ----------
+  actionSelect.addEventListener('change', () => {
+    const isCustom = actionSelect.value === 'custom';
+    customAction.disabled = !isCustom || spinning;
+
+    if (isCustom) {
+      customAction.focus();
+    } else {
+      customAction.value = '';
+    }
+
+    setQuestionLine();
+    updateButtons(); // keep everything in sync
+  });
+
+  customAction.addEventListener('input', setQuestionLine);
+
+  function addNameFromInput(){
+    if(spinning) return;
+    
+    const v = normalizedName(nameInput.value);
+    
+    // Always clear input first, regardless of validation
+    nameInput.value = '';
+    nameInput.focus();
+    
+    if(!v) return;
+
+    // prevent exact duplicates
+    if(!names.some(x => x.toLowerCase() === v.toLowerCase())){
+      names.push(v);
+      renderChips();
+      drawWheel();
+      updateButtons();
+      resultEl.innerHTML = names.length >= 2
+        ? `<span style="opacity:.9">Ready. Hit <strong>SPIN</strong>.</span>`
+        : `<span style="opacity:.9">Add at least 2 names, then spin.</span>`;
+    }
+  }
+
+  addBtn.addEventListener('click', addNameFromInput);
+  nameInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      addNameFromInput();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (spinning) return;
+
+    names = [];
+    hasSpun = false;
+
+    renderChips();
+    drawWheel();
+    updateButtons();
+
+    setSpinLabel('SPIN');
+    resultEl.innerHTML = `Ready. Hit <strong>SPIN</strong>.`;
+  });
+
+  spinBtn.addEventListener('click', spin);
+
+  canvas.addEventListener('click', () => {
+    if(!spinning && names.length >= 2) spin();
+  });
+
+  // ---------- init ----------
+  setQuestionLine();
+  drawWheel();
+  updateButtons();
+
+  // ✅ Clean initial state
+  names = [];
+  renderChips();
+  drawWheel();
+  updateButtons();
+  resultEl.innerHTML = `Ready. Hit <strong>SPIN</strong>.`;
+  setSpinLabel('SPIN');
+})();
+</script>
+</body>
+</html>

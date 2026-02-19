@@ -1,0 +1,2011 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WhoDoesIt — Spin the Wheel to Decide Who Does What</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Can't decide who pays, drives, or goes first? Spin the wheel and let fate decide. Free, instant, no sign-up — just add names and spin." />
+  <meta name="keywords" content="who does what, spin the wheel, random picker, decision maker, name picker, who pays, random wheel" />
+  <meta name="author" content="WhoDoesIt" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0b0c10" />
+  <link rel="canonical" href="https://whodoesit.app" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="WhoDoesIt — Spin the Wheel to Decide" />
+  <meta property="og:description" content="Can't decide who pays, drives, or goes first? Add names, spin, and let fate decide. Free & instant." />
+  <meta property="og:url" content="https://whodoesit.app" />
+  <meta property="og:site_name" content="WhoDoesIt" />
+  <meta property="og:image" content="https://whodoesit.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="WhoDoesIt — Spin the Wheel to Decide" />
+  <meta name="twitter:description" content="Can't decide who pays, drives, or goes first? Add names, spin, and let fate decide." />
+  <meta name="twitter:image" content="https://whodoesit.app/og-image.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="WhoDoesIt" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "WhoDoesIt",
+    "url": "https://whodoesit.app",
+    "description": "Spin the wheel to randomly decide who pays, drives, picks the movie, and more. Free, instant, no sign-up.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <style>
+    :root{
+      --accent:#f9a825;
+      --bg:#0b0c10;
+      --card:#12141b;
+      --muted:#9aa3b2;
+      --text:#e8ecf3;
+      --good:#2bd576;
+      --bad:#ff5b5b;
+      --ring:#2a2f3a;
+      --btn:#2f6df6;
+      --btn2:#1c2030;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html, body {
+      margin: 0;
+      overflow-x: hidden;
+    }
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% -10%, #1b1f2a 0%, transparent 60%),
+                  radial-gradient(900px 700px at 110% 10%, #1b2337 0%, transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+    .app{
+      width:min(980px,100%);
+      flex:1;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:18px;
+      align-content:center;
+    }
+    @media (max-width: 920px){
+      .app{grid-template-columns:1fr; }
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .pad{padding:18px}
+    .header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px 18px 8px 18px;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      text-transform: lowercase;
+    }
+    .brand p{
+      margin:0;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      color: var(--muted);
+    }
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.08);
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
+    select, input, textarea{
+      width:100%;
+      background:#0f1118;
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 12px;
+      outline:none;
+    }
+    input::placeholder, textarea::placeholder{color:#707b8e}
+
+    /* Accent-coloured verb in question & result */
+    .verb{color:var(--accent);font-weight:700}
+
+    /* Spin history */
+    .historyList{
+      list-style:none;margin:8px 0 0;padding:0;
+    }
+    .historyList li{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:13px;color:var(--muted);
+    }
+    .historyList li:last-child{border-bottom:none}
+    .historyList .histWinner{color:var(--text);font-weight:600}
+    .historyList .histVerb{color:var(--accent)}
+    .historyList .histTime{font-size:11px;opacity:.5}
+
+    /* Custom action modal */
+    .custom-modal-overlay{
+      position:fixed;inset:0;z-index:3000;
+      background:rgba(0,0,0,.55);
+      display:flex;align-items:center;justify-content:center;
+      padding:16px;
+    }
+    .custom-modal{
+      background:#23272f;border-radius:16px;padding:24px;
+      width:100%;max-width:400px;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);
+    }
+    .custom-modal h3{margin:0 0 4px;font-size:1.1rem;color:#fff}
+
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:13px;
+    }
+    .chip button{
+      appearance:none;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      cursor:pointer;
+      font-size:16px;
+      line-height:1;
+      padding:0;
+    }
+    .chip button:hover{color:var(--text)}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    button{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:650;
+      cursor:pointer;
+      color:var(--text);
+      background: var(--btn2);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    button.primary{
+      background: linear-gradient(180deg, rgba(47,109,246,1), rgba(31,77,196,1));
+      border:1px solid rgba(255,255,255,.14);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    
+    button.primary:active{
+      transform: scale(0.96);
+    }
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+    .hint{color:var(--muted); font-size:12px; margin-top:6px}
+
+    /* Wheel area */
+    .wheelWrap{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:18px;
+      align-items:center;
+    }
+    canvas{
+      width:100%;
+      max-width:340px;   /* ~10–12% smaller */
+      aspect-ratio: 1 / 1;
+      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.06), rgba(255,255,255,0));
+      border-radius:999px;
+    }
+    .pointer{
+      position:absolute;
+      top:18px;
+      left:50%;
+      transform:translateX(-50%);
+      width:0;height:0;
+      border-left:12px solid transparent;
+      border-right:12px solid transparent;
+      border-top:18px solid #ffd36a;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.45));
+    }
+    .result{
+      width:100%;
+      max-width:380px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.22);
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:8px;
+    }
+    .result strong{font-size:15px}
+    .subtle{
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+      max-width:380px;
+    }
+    #questionLine{
+      font-size:18px;
+      font-weight:600;
+      color:var(--text);
+      letter-spacing:.3px;
+    }
+
+    .footer{
+      padding:0 18px 16px 18px;
+      color:rgba(154,163,178,.85);
+      font-size:12px;
+      text-align:center;
+    }
+
+    /* Pointer wobble */
+    .pointer {
+      transform-origin: 50% 0%;
+    }
+    @keyframes pointerWobble {
+      0%   { transform: translateX(-50%) rotate(0deg); }
+      20%  { transform: translateX(-50%) rotate(8deg); }
+      45%  { transform: translateX(-50%) rotate(-10deg); }
+      70%  { transform: translateX(-50%) rotate(6deg); }
+      100% { transform: translateX(-50%) rotate(0deg); }
+    }
+    .pointer.wobble {
+      animation: pointerWobble 260ms ease-out;
+    }
+
+    .wheelStage { position: relative; width: 100%; display:flex; justify-content:center; }
+    .pointer { top: 0; } /* relative to wheelStage now */
+    
+    .wheelWrap{
+      padding-bottom:14px;
+    }
+
+    /* Subtle text swap animation for Spin button */
+    .spinBtn-animate {
+      animation: spinTextSwap 180ms ease-out;
+    }
+
+    @keyframes spinTextSwap {
+      0%   { transform: scale(1); opacity: 1; }
+      45%  { transform: scale(0.92); opacity: 0.65; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Header row for "Add a name" */
+    .fieldHead{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    /* Buttons beside label */
+    .fieldActions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    /* Smaller buttons for inline actions */
+    .smallBtn{
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:650;
+    }
+
+    /* Tip sits below input */
+    .tipBelow{
+      margin-top:8px;
+    }
+
+    /* Inline field same size as Question */
+    .inlineField{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    /* Match Question input height */
+    .inlineField input{
+      flex:1;
+      height:44px;              /* same visual height as select */
+      padding:10px 12px;
+    }
+
+    /* Small inline buttons */
+    .inlineBtn{
+      height:44px;
+      padding:0 14px;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:650;
+      white-space:nowrap;
+    }
+
+    /* Secondary style for Clear */
+    .inlineBtn.ghost{
+      background: var(--btn2);
+      opacity:.85;
+    }
+
+    .minNote{
+      font-size:12px;
+      font-weight:500;
+      color:var(--muted);
+      margin-left:6px;
+    }
+
+    /* Mobile fit: keep wheel + SPIN + result visible without scrolling */
+    @media (max-width: 520px){
+      canvas{
+        /* was max-width:340px; */
+        max-width: clamp(260px, 72vw, 320px);
+      }
+
+      .wheelWrap{
+        padding-top: 14px;
+        padding-bottom: 10px;
+        gap: 8px;
+      }
+
+      /* Make the SPIN button slightly shorter on small screens */
+      button.primary{
+        padding: 10px 14px;
+        font-size: 14px;
+        letter-spacing: 1px;
+      }
+
+      /* Result box: a bit tighter */
+      .result{
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      /* Question line above wheel: keep it compact */
+      #questionLine{
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+    }
+
+    @media (max-width: 520px) and (max-height: 740px){
+      canvas{ max-width: clamp(240px, 68vw, 300px); }
+    }
+
+    /* Flip/short-viewport phones: size the wheel by HEIGHT so controls below stay visible */
+    @media (max-width: 520px){
+
+      .wheelWrap{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-top: 10px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      }
+
+      /* Key change: wheel size uses dvh (dynamic viewport height) */
+      canvas{
+        width: min(74vw, 37dvh);   /* <-- makes wheel smaller when height is tight */
+        max-width: none;           /* let width rule drive it */
+        aspect-ratio: 1 / 1;
+      }
+
+      /* Tighten the button row so it fits */
+      .btnrow{
+        margin-top: 4px;
+        gap: 8px;
+      }
+
+      /* Slightly smaller primary button */
+      button.primary{
+        height: 40px;
+        padding: 0 14px;
+        font-size: 13px;
+        letter-spacing: 0.9px;
+      }
+
+      /* Result box smaller */
+      .result{
+        min-height: 40px;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      /* Question text above wheel: compact */
+      #questionLine{
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+
+      /* If you still have 2 buttons, allow them to wrap */
+      .btnrow button{
+        flex: 1;
+      }
+    }
+
+    /* Mobile: don't vertically center the whole app (prevents wheel card from drifting down) */
+    @media (max-width: 920px){
+      body{
+        align-items: flex-start;
+        justify-content: center; /* keep horizontal center */
+        padding-top: 12px;
+      }
+
+      .app{
+        height: auto;          /* stop forcing 100vh behavior on stacked layout */
+        max-height: none;
+      }
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 520px){
+      .chips{
+        max-height: 92px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 6px;
+      }
+    }
+
+    /* Mobile: allow scrolling so stacked layout works correctly */
+    @media (max-width: 520px){
+      html, body{
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+    }
+
+    @media (max-width: 520px){
+      body{
+        scroll-behavior: smooth;
+      }
+    }
+
+    .pill{
+      max-width: 100%;
+      white-space: normal;
+      text-align: center;
+    }
+    body{
+      overflow-x: hidden;
+    }
+
+    /* Share panel */
+    .shareOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+      z-index:8000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity 200ms ease;
+    }
+    .shareOverlay.open{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .sharePanel{
+      background:#181a24;
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:18px;
+      padding:24px 22px 20px;
+      width:min(400px,92vw);
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
+    }
+    .sharePanel h3{
+      margin:0 0 14px;
+      font-size:16px;
+      font-weight:700;
+      color:var(--text);
+      text-align:center;
+    }
+    .shareLinkRow{
+      display:flex;
+      gap:8px;
+      margin-bottom:16px;
+    }
+    .shareLinkRow input{
+      flex:1;
+      background:#0f1118;
+      border:1px solid rgba(255,255,255,.1);
+      color:var(--text);
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:13px;
+      outline:none;
+      min-width:0;
+    }
+    .shareLinkRow button{
+      padding:10px 14px;
+      border-radius:10px;
+      font-size:13px;
+      font-weight:650;
+      white-space:nowrap;
+    }
+    .shareSocials{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .shareSocials a{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      text-decoration:none;
+      transition:transform 120ms ease, box-shadow 120ms ease;
+    }
+    .shareSocials a:hover{
+      transform:translateY(-2px);
+      box-shadow:0 4px 14px rgba(0,0,0,.35);
+    }
+    .shareSocials a svg{
+      width:22px;
+      height:22px;
+      fill:#fff;
+    }
+    .shareClose{
+      display:block;
+      margin:14px auto 0;
+      background:transparent;
+      border:1px solid rgba(255,255,255,.1);
+      color:var(--muted);
+      padding:8px 20px;
+      border-radius:10px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    .shareClose:hover{ color:var(--text); }
+  </style>
+</head>
+<body>
+  <main class="app" role="main" aria-label="WhoDoesIt decision spinner">
+    <!-- LEFT: Controls -->
+    <section class="card">
+      <div class="header">
+        <div class="brand">
+          <h1><img src="icon-192.png" alt="WhoDoesIt logo" style="width:28px;height:28px;vertical-align:-4px;margin-right:6px;border-radius:50%">WhoDoesIt <em style="font-size:10px;">let fate decide</em></h1>
+          <p>Spin the wheel. No tracking. No sign-up.</p>
+        </div>
+      </div>
+
+      <div class="pad">
+        <div>
+          <label for="actionSelect">Question</label>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span>Who</span>
+            <select id="actionSelect" aria-label="Choose an action">
+              <option value="pays">pays</option>
+              <option value="drives">drives</option>
+              <option value="orders food">orders food</option>
+              <option value="picks the movie">picks the movie</option>
+              <option value="hosts next time">hosts next time</option>
+              <option value="cleans up">cleans up</option>
+              <option value="goes first">goes first</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <span>?</span>
+          </div>
+        </div>
+
+        <!-- Hidden custom-action modal -->
+        <div id="customModal" class="custom-modal-overlay" style="display:none">
+          <div class="custom-modal">
+            <h3>Custom question</h3>
+            <p style="margin:0 0 12px;color:#aab2c0;font-size:.9rem">Enter a custom verb or phrase</p>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+              <span style="font-weight:600">Who</span>
+              <input id="customAction" type="text" placeholder="e.g., chooses food" aria-label="Custom action verb" style="flex:1" />
+              <span style="font-weight:600">?</span>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button type="button" id="customCancel" class="shareBtn" style="background:#3a3f4b">Cancel</button>
+              <button type="button" id="customConfirm" class="shareBtn">Done</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <label for="nameInput">
+            Add a name
+            <span class="minNote">(at least 2 names required)</span>
+          </label>
+
+          <!-- Input + buttons inline -->
+          <div class="inlineField">
+            <input
+              id="nameInput"
+              type="text"
+              placeholder="Name or names separated by commas"
+              aria-label="Enter a person's name"
+              autocomplete="off"
+            />
+
+            <button id="addBtn" type="button" class="inlineBtn">
+              Add
+            </button>
+
+            <button id="clearBtn" type="button" class="inlineBtn ghost">
+              Clear
+            </button>
+          </div>
+
+          <div class="hint">Tip: press <strong>Enter</strong> to add quickly.</div>
+
+          <!-- Names appear directly below -->
+          <div class="chips" id="chips"></div>
+        </div>
+      </div>
+
+      <!-- Spin History -->
+      <div class="pad" id="historySection" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <label style="margin:0">Recent spins</label>
+          <button type="button" id="clearHistoryBtn" class="inlineBtn ghost" style="font-size:11px;padding:4px 8px;height:auto">Clear</button>
+        </div>
+        <ul id="historyList" class="historyList"></ul>
+      </div>
+
+      <!-- Group / Room mode -->
+      <div class="pad" id="roomSection">
+        <label style="margin:0 0 6px;display:block">Live Room</label>
+        <div id="roomOff" style="display:flex;gap:8px;align-items:center">
+          <button type="button" id="createRoomBtn" class="inlineBtn" style="font-size:12px;padding:6px 12px;height:auto">Create Room</button>
+          <span style="color:var(--muted);font-size:12px">or</span>
+          <input id="joinRoomInput" type="text" placeholder="Room code" style="width:100px;padding:8px;font-size:12px;border-radius:8px" />
+          <button type="button" id="joinRoomBtn" class="inlineBtn ghost" style="font-size:12px;padding:6px 12px;height:auto">Join</button>
+        </div>
+        <div id="roomOn" style="display:none">
+          <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+            <span style="font-size:13px">Room: <strong id="roomCodeDisplay"></strong> <span id="roomPeerCount" style="color:var(--muted);font-size:11px"></span></span>
+            <button type="button" id="leaveRoomBtn" class="inlineBtn ghost" style="font-size:11px;padding:4px 8px;height:auto">Leave</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT: Wheel -->
+    <section class="card wheelWrap">
+      <div class="subtle" id="questionLine">Who <strong class="verb">pays</strong>?</div>
+
+      <div class="wheelStage">
+        <div class="pointer" aria-hidden="true"></div>
+        <canvas id="wheel" width="900" height="900" role="img" aria-label="Spinning decision wheel"></canvas>
+      </div>
+
+      <div class="result" id="result" aria-live="polite">Ready. Hit <strong>SPIN</strong>.</div>
+
+      <div class="btnrow" style="justify-content:center; margin-top:6px; gap:10px;">
+        <button class="primary" id="spinBtn" aria-label="Spin the wheel">SPIN</button>
+        <button id="shareBtn" class="inlineBtn ghost" style="height:auto;padding:10px 14px;font-size:13px;" aria-label="Share result" title="Share this round">
+          📤 Share
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Share panel -->
+  <div class="shareOverlay" id="shareOverlay">
+    <div class="sharePanel">
+      <h3>📤 Share this result</h3>
+      <div class="shareLinkRow">
+        <input type="text" id="shareLinkInput" readonly />
+        <button id="copyLinkBtn">Copy</button>
+      </div>
+      <div class="shareSocials" id="shareSocials">
+        <!-- WhatsApp -->
+        <a href="#" id="shareWhatsApp" target="_blank" rel="noopener" title="WhatsApp" style="background:#25D366;">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.174-.008-.372-.01-.571-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+        <!-- X (Twitter) -->
+        <a href="#" id="shareX" target="_blank" rel="noopener" title="X (Twitter)" style="background:#000;">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <!-- Facebook -->
+        <a href="#" id="shareFB" target="_blank" rel="noopener" title="Facebook" style="background:#1877F2;">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <!-- Telegram -->
+        <a href="#" id="shareTG" target="_blank" rel="noopener" title="Telegram" style="background:#0088cc;">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </a>
+        <!-- Gmail / Email -->
+        <a href="#" id="shareEmail" target="_blank" rel="noopener" title="Email" style="background:#EA4335;">
+          <svg viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 010 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+        </a>
+        <!-- SMS -->
+        <a href="#" id="shareSMS" target="_blank" rel="noopener" title="SMS" style="background:#5BB974;">
+          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
+        </a>
+      </div>
+      <button class="shareClose" id="shareClose">Close</button>
+    </div>
+  </div>
+
+  <footer style="text-align:center;padding:10px 0 16px;color:rgba(154,163,178,.55);font-size:11px;width:100%;flex-shrink:0;">
+    &copy; 2026 WhoDoesIt &mdash; Free &amp; open. No data collected.
+  </footer>
+
+  <section style="max-width:680px;margin:0 auto;padding:24px 22px 40px;color:rgba(154,163,178,.65);font-size:13px;line-height:1.7;text-align:center;">
+    <h2 style="font-size:16px;color:rgba(232,236,243,.75);font-weight:700;margin:0 0 10px;">Free Random Name Picker &amp; Decision Wheel</h2>
+    <p style="margin:0 0 10px;">
+      Can&rsquo;t decide <strong>who pays</strong>, who goes first, or who picks the movie?
+      <strong>Spin the wheel</strong> with names and let fate decide in seconds.
+      WhoDoesIt is a free <strong>random name picker</strong> and <strong>decision wheel</strong> &mdash;
+      no signup, no tracking, no downloads.
+    </p>
+    <p style="margin:0 0 10px;">
+      Just add names, choose a question, and hit <strong>SPIN</strong>.
+      Use it as a <strong>who pays generator</strong>, a classroom picker,
+      a chore assigner, or any time your group needs a quick, fair, random decision.
+    </p>
+    <p style="margin:0;">
+      Works on any device. <strong>Spin the wheel names</strong> appear instantly &mdash;
+      share the result link with friends so everyone sees the outcome.
+    </p>
+  </section>
+
+<script>
+(() => {
+  const actionSelect = document.getElementById('actionSelect');
+  const customAction = document.getElementById('customAction');
+  const customModal = document.getElementById('customModal');
+  const customConfirm = document.getElementById('customConfirm');
+  const customCancel = document.getElementById('customCancel');
+  const questionLine = document.getElementById('questionLine');
+
+  const nameInput = document.getElementById('nameInput');
+  const addBtn = document.getElementById('addBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const chipsEl = document.getElementById('chips');
+
+  const spinBtn = document.getElementById('spinBtn');
+  const spinAgainBtn = document.getElementById('spinAgainBtn');
+  const changeNamesBtn = document.getElementById('changeNamesBtn');
+  const minHint = document.getElementById('minHint');
+
+  const historySection = document.getElementById('historySection');
+  const historyList = document.getElementById('historyList');
+  const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+  const resultEl = document.getElementById('result');
+
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  const pointerEl = document.querySelector('.pointer');
+  const shareBtn = document.getElementById('shareBtn');
+
+  let names = [];
+  let spinning = false;
+  let hasSpun = false;
+
+  // wheel rotation state (radians)
+  let rotation = 0;
+
+  // ---------- helpers ----------
+  function getAction(){
+    if (actionSelect.value === 'custom') {
+      const v = (customAction.value || '').trim();
+      return v.length ? v : 'does it';
+    }
+    return actionSelect.value;
+  }
+
+  function setQuestionLine(){
+    const action = escapeHtml(getAction());
+    questionLine.innerHTML = `Who <strong class="verb">${action}</strong>?`;
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function normalizedName(s){
+    return s.trim().replace(/\s+/g,' ');
+  }
+
+  function updateButtons(){
+    const ok = names.length >= 2 && !spinning;
+    spinBtn.disabled = !ok;
+
+    addBtn.disabled = spinning;
+    clearBtn.disabled = spinning || names.length === 0;
+
+    actionSelect.disabled = spinning;
+
+    // don't touch spinBtn.textContent here
+  }
+
+  function renderChips(){
+    chipsEl.innerHTML = '';
+    names.forEach((n, idx) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `<span>${escapeHtml(n)}</span>`;
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.textContent = '×';
+      x.title = 'Remove';
+      x.addEventListener('click', () => {
+        if(spinning) return;
+        names.splice(idx, 1);
+        renderChips();
+        drawWheel();
+        updateButtons();
+        if(names.length < 2){
+          resultEl.innerHTML = `<span style="opacity:.9">Add at least 2 names, then spin.</span>`;
+        }
+      });
+      chip.appendChild(x);
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  // ---------- effects: tick sound ----------
+  let audioCtx = null;
+  function ensureAudio(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function tickSound(intensity = 1){
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    const now = audioCtx.currentTime;
+    const vol = 0.09 * Math.max(0.35, Math.min(1.2, intensity));
+
+    // Layer 1: sharp click
+    const osc1 = audioCtx.createOscillator();
+    const g1 = audioCtx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(1200 + Math.random()*400, now);
+    g1.gain.setValueAtTime(0, now);
+    g1.gain.linearRampToValueAtTime(vol, now + 0.0004);
+    g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+    osc1.connect(g1); g1.connect(audioCtx.destination);
+    osc1.start(now); osc1.stop(now + 0.02);
+
+    // Layer 2: low resonance body
+    const osc2 = audioCtx.createOscillator();
+    const g2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(300 + Math.random()*100, now);
+    g2.gain.setValueAtTime(0, now);
+    g2.gain.linearRampToValueAtTime(vol * 0.5, now + 0.001);
+    g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+    osc2.connect(g2); g2.connect(audioCtx.destination);
+    osc2.start(now); osc2.stop(now + 0.04);
+  }
+
+  function pointerWobble(){
+    if(!pointerEl) return;
+    pointerEl.classList.remove('wobble');
+    void pointerEl.offsetWidth;
+    pointerEl.classList.add('wobble');
+  }
+
+  // Victory fanfare — ascending chime notes
+  function victoryFanfare(){
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    const now = audioCtx.currentTime;
+    // Bright ascending notes: C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    const noteLen = 0.12;
+    const gap = 0.1;
+
+    notes.forEach((freq, i) => {
+      const t = now + i * gap;
+
+      // Main bell tone
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.15, t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + noteLen + 0.2);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(t); osc.stop(t + noteLen + 0.25);
+
+      // Harmonic shimmer (octave up, quieter)
+      const osc2 = audioCtx.createOscillator();
+      const g2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq * 2, t);
+      g2.gain.setValueAtTime(0, t);
+      g2.gain.linearRampToValueAtTime(0.06, t + 0.008);
+      g2.gain.exponentialRampToValueAtTime(0.001, t + noteLen + 0.15);
+      osc2.connect(g2); g2.connect(audioCtx.destination);
+      osc2.start(t); osc2.stop(t + noteLen + 0.2);
+
+      // Triangle undertone (warmth)
+      const osc3 = audioCtx.createOscillator();
+      const g3 = audioCtx.createGain();
+      osc3.type = 'triangle';
+      osc3.frequency.setValueAtTime(freq * 0.5, t);
+      g3.gain.setValueAtTime(0, t);
+      g3.gain.linearRampToValueAtTime(0.04, t + 0.01);
+      g3.gain.exponentialRampToValueAtTime(0.001, t + noteLen + 0.3);
+      osc3.connect(g3); g3.connect(audioCtx.destination);
+      osc3.start(t); osc3.stop(t + noteLen + 0.35);
+    });
+
+    // Final sustain chord (C major)
+    const chordT = now + notes.length * gap + 0.05;
+    [523.25, 659.25, 783.99].forEach(freq => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, chordT);
+      gain.gain.setValueAtTime(0, chordT);
+      gain.gain.linearRampToValueAtTime(0.08, chordT + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, chordT + 0.8);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(chordT); osc.stop(chordT + 0.85);
+    });
+  }
+
+  // Impact boom on final stop
+  function impactBoom(){
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    const now = audioCtx.currentTime;
+
+    // Deep sub-bass hit
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(80, now);
+    osc.frequency.exponentialRampToValueAtTime(30, now + 0.2);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(now); osc.stop(now + 0.35);
+
+    // Noise burst (impact texture)
+    const bufLen = audioCtx.sampleRate * 0.08;
+    const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i = 0; i < bufLen; i++) d[i] = (Math.random() * 2 - 1) * (1 - i/bufLen);
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buf;
+    const ng = audioCtx.createGain();
+    ng.gain.setValueAtTime(0.12, now);
+    ng.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    noise.connect(ng); ng.connect(audioCtx.destination);
+    noise.start(now); noise.stop(now + 0.1);
+  }
+
+  function setSpinLabel(text){
+    if (spinBtn.textContent === text) return;
+
+    spinBtn.classList.remove('spinBtn-animate');
+    void spinBtn.offsetWidth; // force reflow so animation restarts
+    spinBtn.textContent = text;
+    spinBtn.classList.add('spinBtn-animate');
+  }
+
+  function wheelSettle(finalRotation, onDraw, onDone){
+    // tiny realistic wiggle after stop
+    const t0 = performance.now();
+    const dur = 220;          // short
+    const amp = 0.055;        // radians (~3 degrees)
+    const freq = 22;          // wiggles
+
+    function frame(now){
+      const t = Math.min(1, (now - t0) / dur);
+      // quickly decaying sinusoid
+      const decay = (1 - t) * (1 - t);
+      const wiggle = Math.sin(t * freq) * amp * decay;
+
+      rotation = finalRotation + wiggle;
+      onDraw();
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        rotation = finalRotation;
+        onDraw();
+        onDone?.();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- effects: confetti (full-screen DOM) ----------
+  const confettiContainer = (() => {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:9999;';
+    document.body.appendChild(el);
+    return el;
+  })();
+
+  const CONFETTI_COLORS = [
+    '#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF9FF3',
+    '#54A0FF','#5F27CD','#00D2D3','#FF9F43','#F368E0',
+    '#01A3A4','#EE5A24','#A29BFE','#FD79A8','#FECA57'
+  ];
+
+  const SHAPES = ['rect','circle','ribbon','star'];
+
+  function createConfettiPiece(originX, originY){
+    const el = document.createElement('div');
+    const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    const size = 6 + Math.random() * 10;
+
+    el.style.position = 'absolute';
+    el.style.left = originX + 'px';
+    el.style.top = originY + 'px';
+    el.style.opacity = '1';
+    el.style.pointerEvents = 'none';
+    el.style.willChange = 'transform, opacity';
+
+    if(shape === 'rect'){
+      el.style.width = size + 'px';
+      el.style.height = size * (0.4 + Math.random() * 0.4) + 'px';
+      el.style.backgroundColor = color;
+      el.style.borderRadius = '2px';
+    } else if(shape === 'circle'){
+      el.style.width = size * 0.7 + 'px';
+      el.style.height = size * 0.7 + 'px';
+      el.style.backgroundColor = color;
+      el.style.borderRadius = '50%';
+    } else if(shape === 'ribbon'){
+      el.style.width = size * 0.3 + 'px';
+      el.style.height = size * 2.5 + 'px';
+      el.style.backgroundColor = color;
+      el.style.borderRadius = '1px';
+    } else {
+      // star using box-shadow trick
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.backgroundColor = color;
+      el.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+    }
+
+    // Physics
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 4 + Math.random() * 12;
+    const p = {
+      el,
+      x: originX,
+      y: originY,
+      vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 4,
+      vy: Math.sin(angle) * speed - Math.random() * 8 - 4,
+      gravity: 0.12 + Math.random() * 0.08,
+      drag: 0.985 + Math.random() * 0.01,
+      rotX: Math.random() * 360,
+      rotY: Math.random() * 360,
+      rotZ: Math.random() * 360,
+      vrx: (Math.random() - 0.5) * 15,
+      vry: (Math.random() - 0.5) * 15,
+      vrz: (Math.random() - 0.5) * 10,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.05 + Math.random() * 0.08,
+      wobbleAmp: 0.5 + Math.random() * 2,
+      life: 1,
+      decay: 0.003 + Math.random() * 0.004,
+      shimmer: Math.random() > 0.7 // some pieces sparkle
+    };
+
+    confettiContainer.appendChild(el);
+    return p;
+  }
+
+  let confettiPieces = [];
+  let confettiAnimating = false;
+
+  function confettiBurst(){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // Multiple burst origins: center, left cannon, right cannon
+    const origins = [
+      { x: w * 0.5, y: h * 0.3, count: 80 },   // center
+      { x: w * 0.15, y: h * 0.85, count: 50 },   // bottom-left cannon
+      { x: w * 0.85, y: h * 0.85, count: 50 },   // bottom-right cannon
+      { x: w * 0.5, y: h * 0.1,  count: 30 },    // top center shower
+    ];
+
+    origins.forEach(({ x, y, count }) => {
+      for(let i = 0; i < count; i++){
+        confettiPieces.push(createConfettiPiece(x, y));
+      }
+    });
+
+    if(!confettiAnimating){
+      confettiAnimating = true;
+      requestAnimationFrame(animateConfetti);
+    }
+  }
+
+  function animateConfetti(){
+    let alive = false;
+
+    for(let i = confettiPieces.length - 1; i >= 0; i--){
+      const p = confettiPieces[i];
+
+      // Physics update
+      p.vy += p.gravity;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Wobble (air resistance flutter)
+      p.wobble += p.wobbleSpeed;
+      p.x += Math.sin(p.wobble) * p.wobbleAmp;
+
+      // Rotation
+      p.rotX += p.vrx;
+      p.rotY += p.vry;
+      p.rotZ += p.vrz;
+
+      // Slow down rotation over time
+      p.vrx *= 0.998;
+      p.vry *= 0.998;
+      p.vrz *= 0.998;
+
+      // Fade
+      p.life -= p.decay;
+
+      if(p.life <= 0 || p.y > window.innerHeight + 50){
+        p.el.remove();
+        confettiPieces.splice(i, 1);
+        continue;
+      }
+
+      // Shimmer effect
+      let opacity = Math.max(0, p.life);
+      if(p.shimmer){
+        opacity *= 0.6 + Math.sin(performance.now() * 0.01 + p.wobble * 5) * 0.4;
+      }
+
+      p.el.style.transform = `translate3d(${p.x - parseFloat(p.el.style.left)}px, ${p.y - parseFloat(p.el.style.top)}px, 0) rotateX(${p.rotX}deg) rotateY(${p.rotY}deg) rotateZ(${p.rotZ}deg)`;
+      p.el.style.opacity = opacity;
+
+      alive = true;
+    }
+
+    if(alive){
+      requestAnimationFrame(animateConfetti);
+    } else {
+      confettiAnimating = false;
+    }
+  }
+
+  // Keep old confetti object stub so drawConfetti calls don't break
+  const confetti = { active: false, parts: [], t0: 0, dur: 0 };
+  function drawConfetti(){}
+
+  // ---------- wheel drawing ----------
+  function drawWheel(highlightIndex = -1){
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2;
+    const r = Math.min(w,h)*0.44;
+
+    ctx.clearRect(0,0,w,h);
+
+    // base ring
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // outer glow
+    ctx.beginPath();
+    ctx.arc(0,0,r+34,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fill();
+
+    // background circle
+    ctx.beginPath();
+    ctx.arc(0,0,r+18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.20)';
+    ctx.fill();
+
+    const n = Math.max(names.length, 2);
+    const slice = (Math.PI * 2) / n;
+
+    // rotate for current spin state
+    ctx.rotate(rotation);
+
+    for(let i=0;i<n;i++){
+      const start = i * slice;
+      const end = start + slice;
+
+      // alternate slice shading
+      const isAlt = i % 2 === 0;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0,r,start,end);
+      ctx.closePath();
+      ctx.fillStyle = isAlt ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)';
+      ctx.fill();
+
+      // highlight winner slice
+      if(i === highlightIndex){
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.arc(0,0,r,start,end);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 211, 106, 0.18)';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // slice border
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // text
+      const label = names[i] || `Name ${i+1}`;
+      const angle = start + slice/2;
+      ctx.save();
+      ctx.rotate(angle);
+      ctx.translate(r*0.66, 0);
+      ctx.rotate(Math.PI/2);
+
+      ctx.fillStyle = 'rgba(232,236,243,0.92)';
+      ctx.font = '700 34px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // truncate long
+      const max = 14;
+      const t = label.length > max ? label.slice(0, max-1) + '…' : label;
+      ctx.fillText(t, 0, 0);
+
+      ctx.restore();
+    }
+
+    // center hub
+    ctx.save();
+    ctx.rotate(-rotation);
+    ctx.beginPath();
+    ctx.arc(0,0,r*0.18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(232,236,243,0.85)';
+    ctx.font = '800 34px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SPIN', 0, 0);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // ---------- spin logic ----------
+  // Pointer is at top. Canvas angle 0 points to the right, so top is -90deg.
+  // We want the chosen slice's center to land at pointer angle (-90deg) after rotation.
+  function spin(){
+    if(spinning || names.length < 2) return;
+
+    // unlock audio on user gesture
+    ensureAudio();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    spinning = true;
+    updateButtons();
+
+    const n = names.length;
+    const slice = (Math.PI*2) / n;
+
+    const chosenIndex = Math.floor(Math.random() * n);
+
+    const chosenCenter = chosenIndex * slice + slice/2;
+    const pointerAngle = -Math.PI/2; // top
+
+    // target rotation (mod 2π)
+    let target = pointerAngle - chosenCenter;
+
+    // extra spins for drama
+    const extraSpins = 7 + Math.floor(Math.random() * 5); // 7..11
+    target += extraSpins * Math.PI * 2;
+
+    const start = rotation;
+    const end = target;
+
+    const duration = 2550 + Math.floor(Math.random()*650); // ~2.6..3.2s
+    const t0 = performance.now();
+
+    // ticks
+    let lastTickSlice = 0;
+
+    resultEl.innerHTML = `<span style="opacity:.9">Spinning…</span>`;
+
+    // easing with bounce at end
+    function easeOutBack(t){
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+    function frame(now){
+      const t = clamp01((now - t0) / duration);
+      const e = easeOutBack(t);
+      rotation = start + (end - start) * e;
+
+      // tick whenever we pass into a new slice boundary near the pointer
+      // compute which slice is currently under the pointer
+      const current = ((rotation % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
+      // pointer sees angle = pointerAngle, so wheel angle under pointer = (pointerAngle - rotation) mod 2π
+      const underPointer = ((pointerAngle - current) + Math.PI*2) % (Math.PI*2);
+      const sliceIndexAtPointer = Math.floor(underPointer / slice);
+
+      if(sliceIndexAtPointer !== lastTickSlice){
+        // intensity follows speed: early loud, later softer
+        const intensity = 0.4 + (1 - t) * 0.9;
+        tickSound(intensity);
+        pointerWobble();
+        lastTickSlice = sliceIndexAtPointer;
+
+      }
+
+      drawWheel(); // no highlight during spin
+
+      // confetti can animate on top (if active)
+      drawConfetti(now);
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        // normalize rotation
+        rotation = ((rotation % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
+
+        drawWheel(chosenIndex);
+
+        const action = escapeHtml(getAction());
+        const winner = escapeHtml(names[chosenIndex]);
+
+        resultEl.innerHTML = `🎯 <strong>${winner}</strong> <span class="verb">${action}</span>.`;
+        lastWinner = names[chosenIndex];
+        lastAction = getAction();
+        addHistory(names[chosenIndex], getAction());
+        setQuestionLine();
+
+        // broadcast to room peers
+        if(window.__room) window.__room.broadcastResult(names[chosenIndex], getAction());
+
+        // celebrate!
+        confettiBurst();
+        impactBoom();
+        victoryFanfare();
+        pointerWobble();
+
+        const finalRotation = rotation;
+
+        wheelSettle(
+          finalRotation,
+          () => {
+            // keep winner highlight visible during settle
+            drawWheel(chosenIndex);
+            // keep confetti animating on top if active
+            drawConfetti(performance.now());
+          },
+          () => {
+            // final clean draw
+            drawWheel(chosenIndex);
+          }
+        );
+
+        hasSpun = true;
+        setSpinLabel('SPIN AGAIN');
+        
+        spinning = false;
+        updateButtons();
+
+        // animate confetti for its duration
+        const endT = performance.now() + confetti.dur;
+        const confettiLoop = (nnow) => {
+          // redraw wheel with highlight, then confetti
+          drawWheel(chosenIndex);
+          drawConfetti(nnow);
+          if(confetti.active && nnow < endT){
+            requestAnimationFrame(confettiLoop);
+          } else {
+            // final clean draw
+            drawWheel(chosenIndex);
+          }
+        };
+        requestAnimationFrame(confettiLoop);
+      }
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- share ----------
+  let lastWinner = '';
+  let lastAction = '';
+
+  function buildShareURL(){
+    const params = new URLSearchParams();
+    if(names.length) params.set('names', names.join(','));
+    const action = getAction();
+    if(action && action !== 'pays') params.set('action', action);
+    if(actionSelect.value === 'custom') params.set('custom', '1');
+    // Include result if we have a winner
+    if(lastWinner) params.set('result', lastWinner);
+    if(lastAction) params.set('q', lastAction);
+    return location.origin + location.pathname + '?' + params.toString();
+  }
+
+  function shareResult(){
+    const url = buildShareURL();
+    const action = lastAction || getAction();
+    const text = lastWinner
+      ? `${lastWinner} ${action}! Spun on WhoDoesIt 🎯`
+      : `Who ${action}? Spin the wheel and find out!`;
+    const encodedURL = encodeURIComponent(url);
+    const encodedText = encodeURIComponent(text);
+
+    // Populate link input
+    const linkInput = document.getElementById('shareLinkInput');
+    linkInput.value = url;
+
+    // Set social links
+    document.getElementById('shareWhatsApp').href = `https://wa.me/?text=${encodedText}%20${encodedURL}`;
+    document.getElementById('shareX').href = `https://x.com/intent/tweet?text=${encodedText}&url=${encodedURL}`;
+    document.getElementById('shareFB').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedURL}`;
+    document.getElementById('shareTG').href = `https://t.me/share/url?url=${encodedURL}&text=${encodedText}`;
+    document.getElementById('shareEmail').href = `mailto:?subject=${encodeURIComponent('WhoDoesIt Result')}&body=${encodedText}%0A${encodedURL}`;
+    document.getElementById('shareSMS').href = `sms:?body=${encodedText}%20${encodedURL}`;
+
+    // Open panel
+    document.getElementById('shareOverlay').classList.add('open');
+  }
+
+  // Copy link button
+  document.getElementById('copyLinkBtn').addEventListener('click', () => {
+    const linkInput = document.getElementById('shareLinkInput');
+    linkInput.select();
+    navigator.clipboard.writeText(linkInput.value).then(() => {
+      const btn = document.getElementById('copyLinkBtn');
+      btn.textContent = '\u2705 Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    }).catch(() => {
+      document.execCommand('copy');
+    });
+  });
+
+  // Close share panel
+  document.getElementById('shareClose').addEventListener('click', () => {
+    document.getElementById('shareOverlay').classList.remove('open');
+  });
+  document.getElementById('shareOverlay').addEventListener('click', (e) => {
+    if(e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+  });
+
+  shareBtn.addEventListener('click', shareResult);
+
+  // Load state from URL params on init
+  function loadFromURL(){
+    const params = new URLSearchParams(location.search);
+
+    // --- Shared result mode: ?result=Jake&q=pays ---
+    const resultName = params.get('result');
+    const resultQ = params.get('q') || 'pays';
+    if(resultName){
+      // Show result banner immediately
+      const safeN = escapeHtml(resultName);
+      const safeQ = escapeHtml(resultQ);
+      resultEl.innerHTML = `🎯 <strong>${safeN}</strong> <span class="verb">${safeQ}</span>!`;
+      lastWinner = resultName;
+      lastAction = resultQ;
+
+      // Also load names if present (so viewer can re-spin)
+      const n = params.get('names');
+      if(n){
+        names = n.split(',').map(s => s.trim()).filter(Boolean);
+        renderChips();
+        drawWheel();
+      }
+
+      // Set the action selector to match
+      const opts = [...actionSelect.options].map(o => o.value);
+      const isCustom = params.get('custom') === '1';
+      if(isCustom || !opts.includes(resultQ)){
+        actionSelect.value = 'custom';
+        customAction.value = resultQ;
+      } else {
+        actionSelect.value = resultQ;
+      }
+      setQuestionLine();
+      updateButtons();
+      return true; // signal that result was loaded
+    }
+
+    // --- Normal mode: load names & action ---
+    const n = params.get('names');
+    if(n){
+      names = n.split(',').map(s => s.trim()).filter(Boolean);
+      renderChips();
+      drawWheel();
+    }
+    const action = params.get('action');
+    const isCustom = params.get('custom') === '1';
+    if(action){
+      if(isCustom){
+        actionSelect.value = 'custom';
+        customAction.value = action;
+      } else {
+        const opts = [...actionSelect.options].map(o => o.value);
+        if(opts.includes(action)){
+          actionSelect.value = action;
+        } else {
+          actionSelect.value = 'custom';
+          customAction.value = action;
+        }
+      }
+      setQuestionLine();
+    }
+    updateButtons();
+  }
+
+  // ---------- custom modal helpers ----------
+  let prevActionValue = actionSelect.value; // track so Cancel can revert
+
+  function showCustomModal(){
+    customModal.style.display = '';
+    customAction.focus();
+  }
+  function hideCustomModal(accept){
+    customModal.style.display = 'none';
+    if(accept){
+      const v = (customAction.value || '').trim();
+      if(!v){
+        // empty → revert to previous selection
+        actionSelect.value = prevActionValue !== 'custom' ? prevActionValue : 'pays';
+        customAction.value = '';
+      }
+    } else {
+      // Cancel → revert
+      actionSelect.value = prevActionValue !== 'custom' ? prevActionValue : 'pays';
+      customAction.value = '';
+    }
+    setQuestionLine();
+    updateButtons();
+  }
+  customConfirm.addEventListener('click', () => hideCustomModal(true));
+  customCancel.addEventListener('click', () => hideCustomModal(false));
+  customModal.addEventListener('click', e => { if(e.target === customModal) hideCustomModal(false); });
+  customAction.addEventListener('input', setQuestionLine);
+  customAction.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); hideCustomModal(true); }});
+
+  // ---------- events ----------
+  actionSelect.addEventListener('change', () => {
+    const isCustom = actionSelect.value === 'custom';
+
+    if (isCustom) {
+      showCustomModal();
+    } else {
+      customAction.value = '';
+      prevActionValue = actionSelect.value;
+    }
+
+    setQuestionLine();
+    updateButtons();
+    if(window.__room) window.__room.broadcastSync();
+  });
+
+  function addNameFromInput(){
+    if(spinning) return;
+    
+    const raw = nameInput.value;
+    
+    // Always clear input first, regardless of validation
+    nameInput.value = '';
+    nameInput.focus();
+    
+    // Split by comma to support multiple names at once
+    const entries = raw.split(',').map(s => normalizedName(s)).filter(Boolean);
+    if(!entries.length) return;
+
+    let added = 0;
+    for(const v of entries){
+      // prevent exact duplicates
+      if(!names.some(x => x.toLowerCase() === v.toLowerCase())){
+        names.push(v);
+        added++;
+      }
+    }
+
+    if(added > 0){
+      renderChips();
+      drawWheel();
+      updateButtons();
+      if(window.__room) window.__room.broadcastSync();
+      resultEl.innerHTML = names.length >= 2
+        ? `<span style="opacity:.9">Ready. Hit <strong>SPIN</strong>.</span>`
+        : `<span style="opacity:.9">Add at least 2 names, then spin.</span>`;
+    }
+  }
+
+  addBtn.addEventListener('click', addNameFromInput);
+  nameInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      addNameFromInput();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (spinning) return;
+
+    names = [];
+    hasSpun = false;
+    lastWinner = '';
+    lastAction = '';
+
+    renderChips();
+    drawWheel();
+    updateButtons();
+    if(window.__room) window.__room.broadcastSync();
+
+    setSpinLabel('SPIN');
+    resultEl.innerHTML = `Ready. Hit <strong>SPIN</strong>.`;
+  });
+
+  spinBtn.addEventListener('click', spin);
+
+  canvas.addEventListener('click', () => {
+    if(!spinning && names.length >= 2) spin();
+  });
+
+  // ---------- init ----------
+  // ---------- spin history (localStorage) ----------
+  const HIST_KEY = 'whodoesit_history';
+  const HIST_MAX = 20;
+
+  function loadHistory(){
+    try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; }
+    catch{ return []; }
+  }
+  function saveHistory(arr){
+    try { localStorage.setItem(HIST_KEY, JSON.stringify(arr)); } catch{}
+  }
+  function addHistory(winner, action){
+    const arr = loadHistory();
+    arr.unshift({ winner, action, ts: Date.now() });
+    if(arr.length > HIST_MAX) arr.length = HIST_MAX;
+    saveHistory(arr);
+    renderHistory();
+  }
+  const HIST_VISIBLE = 3;
+  let histExpanded = false;
+
+  function renderHistory(){
+    const arr = loadHistory();
+    if(!arr.length){
+      historySection.style.display = 'none';
+      return;
+    }
+    historySection.style.display = '';
+    historyList.innerHTML = '';
+    const show = histExpanded ? arr : arr.slice(0, HIST_VISIBLE);
+    show.forEach(h => {
+      const li = document.createElement('li');
+      const ago = timeAgo(h.ts);
+      li.innerHTML = `<span><span class="histWinner">${escapeHtml(h.winner)}</span> <span class="histVerb">${escapeHtml(h.action)}</span></span><span class="histTime">${ago}</span>`;
+      historyList.appendChild(li);
+    });
+    // "more" / "less" toggle
+    if(arr.length > HIST_VISIBLE){
+      const toggle = document.createElement('li');
+      toggle.style.cssText = 'justify-content:center;border:none;padding:4px 0';
+      const btn = document.createElement('button');
+      btn.textContent = histExpanded ? 'Show less' : `Show all ${arr.length}`;
+      btn.style.cssText = 'background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:2px 8px';
+      btn.addEventListener('click', () => { histExpanded = !histExpanded; renderHistory(); });
+      toggle.appendChild(btn);
+      historyList.appendChild(toggle);
+    }
+  }
+  function timeAgo(ts){
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if(s < 60) return 'just now';
+    const m = Math.floor(s / 60);
+    if(m < 60) return m + 'm ago';
+    const hr = Math.floor(m / 60);
+    if(hr < 24) return hr + 'h ago';
+    const d = Math.floor(hr / 24);
+    return d + 'd ago';
+  }
+  clearHistoryBtn.addEventListener('click', () => {
+    localStorage.removeItem(HIST_KEY);
+    renderHistory();
+  });
+  renderHistory();
+
+  // Listen for room sync (names set by a peer)
+  window.addEventListener('room:set-names', (e) => {
+    const incoming = e.detail.names || [];
+    names = incoming.slice();
+    renderChips();
+    drawWheel();
+    updateButtons();
+    if(names.length >= 2){
+      resultEl.innerHTML = `<span style="opacity:.9">Ready. Hit <strong>SPIN</strong>.</span>`;
+    } else {
+      resultEl.innerHTML = `<span style="opacity:.9">Add at least 2 names, then spin.</span>`;
+    }
+  });
+
+  setQuestionLine();
+  drawWheel();
+  updateButtons();
+
+  // Load shared state from URL if present
+  const loadedResult = loadFromURL();
+
+  // If no result was loaded from URL, set clean defaults
+  if(!loadedResult){
+    if(names.length === 0){
+      renderChips();
+      drawWheel();
+      updateButtons();
+      resultEl.innerHTML = `Ready. Hit <strong>SPIN</strong>.`;
+      setSpinLabel('SPIN');
+    } else if(names.length >= 2){
+      resultEl.innerHTML = `<span style=\"opacity:.9\">Ready. Hit <strong>SPIN</strong>.</span>`;
+      setSpinLabel('SPIN');
+    } else {
+      resultEl.innerHTML = `<span style=\"opacity:.9\">Add at least 2 names, then spin.</span>`;
+      setSpinLabel('SPIN');
+    }
+  }
+})();
+
+// Register service worker for PWA / offline support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+
+<!-- Supabase Realtime for group/room mode -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(() => {
+  const SUPABASE_URL  = 'https://abvqsfypxvpjcapcqnoe.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidnFzZnlweHZwamNhcGNxbm9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1MTMyNzIsImV4cCI6MjA4NzA4OTI3Mn0.mlEZR1dtnRZvhdoFu_181q7bLzeuyde0OEHaVVtRr_4';
+
+  // Guard: don't init if placeholder credentials
+  const isConfigured = !SUPABASE_URL.includes('YOUR_PROJECT');
+  const roomSection = document.getElementById('roomSection');
+  if(!isConfigured){
+    roomSection.style.display = 'none';
+    return;
+  }
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const createRoomBtn = document.getElementById('createRoomBtn');
+  const joinRoomBtn = document.getElementById('joinRoomBtn');
+  const joinRoomInput = document.getElementById('joinRoomInput');
+  const leaveRoomBtn = document.getElementById('leaveRoomBtn');
+  const roomOff = document.getElementById('roomOff');
+  const roomOn = document.getElementById('roomOn');
+  const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+  const roomPeerCount = document.getElementById('roomPeerCount');
+
+  let channel = null;
+  let roomCode = null;
+
+  function genCode(){
+    return Math.random().toString(36).slice(2,8).toUpperCase();
+  }
+
+  function joinRoom(code){
+    if(channel) leaveRoom();
+    roomCode = code.toUpperCase().trim();
+    if(!roomCode) return;
+
+    channel = sb.channel(`room:${roomCode}`, {
+      config: { broadcast: { self: true } }
+    });
+
+    channel
+      .on('broadcast', { event: 'sync' }, ({ payload }) => {
+        // Another user synced wheel state → apply it
+        if(payload.names){
+          // Access the main IIFE's state via DOM events
+          window.dispatchEvent(new CustomEvent('room:sync', { detail: payload }));
+        }
+      })
+      .on('broadcast', { event: 'spin-result' }, ({ payload }) => {
+        window.dispatchEvent(new CustomEvent('room:spin-result', { detail: payload }));
+      })
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const count = Object.keys(state).reduce((a, k) => a + state[k].length, 0);
+        roomPeerCount.textContent = `(${count} online)`;
+      })
+      .subscribe(async (status) => {
+        if(status === 'SUBSCRIBED'){
+          await channel.track({ user: genCode() });
+          roomOff.style.display = 'none';
+          roomOn.style.display = '';
+          roomCodeDisplay.textContent = roomCode;
+          // Broadcast current state to newcomers
+          broadcastSync();
+        }
+      });
+  }
+
+  function leaveRoom(){
+    if(channel){
+      channel.unsubscribe();
+      channel = null;
+    }
+    roomCode = null;
+    roomOff.style.display = '';
+    roomOn.style.display = 'none';
+    roomPeerCount.textContent = '';
+  }
+
+  function broadcastSync(){
+    if(!channel) return;
+    // Read current state from the main app
+    const namesEl = document.getElementById('chips');
+    const actionSelect = document.getElementById('actionSelect');
+    const customAction = document.getElementById('customAction');
+    const chipEls = namesEl.querySelectorAll('.chip');
+    const names = [...chipEls].map(c => c.textContent.replace('×','').trim());
+    channel.send({
+      type: 'broadcast',
+      event: 'sync',
+      payload: {
+        names,
+        action: actionSelect.value,
+        customAction: customAction.value
+      }
+    });
+  }
+
+  function broadcastResult(winner, action){
+    if(!channel) return;
+    channel.send({
+      type: 'broadcast',
+      event: 'spin-result',
+      payload: { winner, action }
+    });
+  }
+
+  // Expose to main app
+  window.__room = { broadcastSync, broadcastResult, isInRoom: () => !!channel };
+
+  createRoomBtn.addEventListener('click', () => joinRoom(genCode()));
+  joinRoomBtn.addEventListener('click', () => joinRoom(joinRoomInput.value));
+  joinRoomInput.addEventListener('keydown', e => { if(e.key === 'Enter') joinRoom(joinRoomInput.value); });
+  leaveRoomBtn.addEventListener('click', leaveRoom);
+
+  // Listen for sync events from room peers
+  window.addEventListener('room:sync', (e) => {
+    const { names, action, customAction: ca } = e.detail;
+    const actionSelect = document.getElementById('actionSelect');
+    const customActionEl = document.getElementById('customAction');
+    const nameInput = document.getElementById('nameInput');
+
+    // Update action
+    if(action){
+      actionSelect.value = action;
+      if(action === 'custom' && ca){
+        customActionEl.value = ca;
+      }
+    }
+
+    // Update names by simulating the app's internal state
+    // We dispatch a custom event that the main IIFE listens for
+    window.dispatchEvent(new CustomEvent('room:set-names', { detail: { names } }));
+  });
+
+  window.addEventListener('room:spin-result', (e) => {
+    const { winner, action } = e.detail;
+    const resultEl = document.getElementById('result');
+    const escapeHtml = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    resultEl.innerHTML = `🎯 <strong>${escapeHtml(winner)}</strong> <span class="verb">${escapeHtml(action)}</span>.`;
+  });
+})();
+</script>
+</body>
+</html>

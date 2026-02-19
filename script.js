@@ -1,0 +1,1 @@
+/*\n * WhoDoesIt — all JavaScript is inlined in index.html for single-file deployment.\n * This file is intentionally empty.\n * If moving to a build system, extract <script> from index.html here.\n */

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WhoDoesIt Wheel — Embeddable Widget</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    :root{
+      --accent:#f9a825;
+      --bg:#0b0c10;
+      --text:#e8ecf3;
+      --muted:#9aa3b2;
+      --btn:#2f6df6;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:var(--bg);color:var(--text);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:10px;gap:8px;
+    }
+    .question{font-size:14px;color:var(--muted);text-align:center}
+    .question .verb{color:var(--accent);font-weight:700}
+    .wheelBox{position:relative;width:100%;max-width:400px;aspect-ratio:1}
+    canvas{width:100%;height:100%;display:block}
+    .pointer{
+      position:absolute;top:-2px;left:50%;transform:translateX(-50%);
+      width:0;height:0;
+      border-left:14px solid transparent;border-right:14px solid transparent;
+      border-top:30px solid var(--accent);
+      filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));
+      z-index:2;
+      transition:transform .12s ease;
+    }
+    .pointer.wobble{animation:ptrBounce .18s ease}
+    @keyframes ptrBounce{0%{transform:translateX(-50%) rotate(0)}40%{transform:translateX(-50%) rotate(12deg)}100%{transform:translateX(-50%) rotate(0)}}
+    .result{
+      text-align:center;font-size:15px;min-height:28px;
+      padding:6px 12px;border-radius:10px;
+      background:rgba(255,255,255,.04);width:100%;max-width:400px;
+    }
+    .result .verb{color:var(--accent);font-weight:700}
+    button{
+      background:var(--btn);color:#fff;border:none;border-radius:12px;
+      padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;
+      letter-spacing:.6px;
+    }
+    button:disabled{opacity:.4;cursor:default}
+    .branding{
+      font-size:11px;color:rgba(154,163,178,.45);text-align:center;
+    }
+    .branding a{color:rgba(154,163,178,.55);text-decoration:none}
+    .branding a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="question" id="questionLine">Who <strong class="verb">pays</strong>?</div>
+  <div class="wheelBox">
+    <div class="pointer" id="pointer"></div>
+    <canvas id="wheel" width="900" height="900"></canvas>
+  </div>
+  <div class="result" id="result">Add names via URL params &amp; spin!</div>
+  <button id="spinBtn" disabled>SPIN</button>
+  <div class="branding">Powered by <a href="https://whodoesit.app" target="_blank" rel="noopener">WhoDoesIt</a></div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  const pointerEl = document.getElementById('pointer');
+  const resultEl = document.getElementById('result');
+  const spinBtn = document.getElementById('spinBtn');
+  const questionLine = document.getElementById('questionLine');
+
+  // Parse URL params: ?names=Alice,Bob,Charlie&action=pays
+  const params = new URLSearchParams(location.search);
+  const nameStr = params.get('names') || '';
+  const action = params.get('action') || 'pays';
+  const names = nameStr.split(',').map(s => s.trim()).filter(Boolean);
+
+  let rotation = 0;
+  let spinning = false;
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  questionLine.innerHTML = `Who <strong class="verb">${escapeHtml(action)}</strong>?`;
+
+  if(names.length >= 2){
+    spinBtn.disabled = false;
+    resultEl.innerHTML = `Ready. Hit <strong>SPIN</strong>.`;
+  } else {
+    resultEl.innerHTML = `<span style="opacity:.7">Add names via URL: ?names=Alice,Bob&action=pays</span>`;
+  }
+
+  function drawWheel(highlightIndex = -1){
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2;
+    const r = Math.min(w,h)*0.44;
+    ctx.clearRect(0,0,w,h);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.beginPath(); ctx.arc(0,0,r+34,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.04)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(0,0,r+18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.20)'; ctx.fill();
+    const n = Math.max(names.length, 2);
+    const slice = (Math.PI * 2) / n;
+    ctx.rotate(rotation);
+    for(let i=0;i<n;i++){
+      const start = i * slice, end = start + slice;
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,r,start,end); ctx.closePath();
+      ctx.fillStyle = i%2===0 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)';
+      ctx.fill();
+      if(i === highlightIndex){
+        ctx.save(); ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,r,start,end); ctx.closePath();
+        ctx.fillStyle = 'rgba(255,211,106,0.18)'; ctx.fill(); ctx.restore();
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 2; ctx.stroke();
+      const label = names[i] || `Name ${i+1}`;
+      const angle = start + slice/2;
+      ctx.save(); ctx.rotate(angle); ctx.translate(r*0.66, 0); ctx.rotate(Math.PI/2);
+      ctx.fillStyle = 'rgba(232,236,243,0.92)';
+      ctx.font = '700 34px ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const max = 14;
+      const t = label.length > max ? label.slice(0,max-1) + '…' : label;
+      ctx.fillText(t, 0, 0);
+      ctx.restore();
+    }
+    ctx.save(); ctx.rotate(-rotation);
+    ctx.beginPath(); ctx.arc(0,0,r*0.18,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = 'rgba(232,236,243,0.85)';
+    ctx.font = '800 34px ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('SPIN', 0, 0);
+    ctx.restore();
+    ctx.restore();
+  }
+
+  function pointerWobble(){
+    pointerEl.classList.remove('wobble');
+    void pointerEl.offsetWidth;
+    pointerEl.classList.add('wobble');
+  }
+
+  function spin(){
+    if(spinning || names.length < 2) return;
+    spinning = true;
+    spinBtn.disabled = true;
+    const n = names.length;
+    const slice = (Math.PI*2) / n;
+    const chosenIndex = Math.floor(Math.random() * n);
+    const chosenCenter = chosenIndex * slice + slice/2;
+    const pointerAngle = -Math.PI/2;
+    let target = pointerAngle - chosenCenter;
+    const extraSpins = 7 + Math.floor(Math.random()*5);
+    target += extraSpins * Math.PI * 2;
+    const start = rotation, end = target;
+    const duration = 4200 + Math.random()*1200;
+    const t0 = performance.now();
+    let lastTickSlice = -1;
+    function easeOutBack(t){
+      const c1=1.2,c3=c1+1;
+      return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);
+    }
+    function frame(now){
+      const t = Math.max(0,Math.min(1,(now-t0)/duration));
+      rotation = start + (end-start)*easeOutBack(t);
+      const current = ((rotation%(Math.PI*2))+(Math.PI*2))%(Math.PI*2);
+      const underPointer = ((pointerAngle-current)+Math.PI*2)%(Math.PI*2);
+      const si = Math.floor(underPointer/slice);
+      if(si !== lastTickSlice){ pointerWobble(); lastTickSlice = si; }
+      drawWheel();
+      if(t<1){ requestAnimationFrame(frame); }
+      else {
+        rotation = ((rotation%(Math.PI*2))+(Math.PI*2))%(Math.PI*2);
+        drawWheel(chosenIndex);
+        const winner = escapeHtml(names[chosenIndex]);
+        const act = escapeHtml(action);
+        resultEl.innerHTML = `🎯 <strong>${winner}</strong> <span class="verb">${act}</span>!`;
+        spinBtn.textContent = 'SPIN AGAIN';
+        spinning = false;
+        spinBtn.disabled = false;
+      }
+    }
+    resultEl.innerHTML = `<span style="opacity:.7">Spinning…</span>`;
+    requestAnimationFrame(frame);
+  }
+
+  spinBtn.addEventListener('click', spin);
+  drawWheel();
+})();
+</script>
+</body>
+</html>

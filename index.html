@@ -54,7 +54,7 @@
   </script>
   <style>
     :root{
-      --accent:#f9a825;
+      --accent:#D4AF37;
       --bg:#0b0c10;
       --card:#12141b;
       --muted:#9aa3b2;
@@ -223,13 +223,18 @@
       border:1px solid rgba(255,255,255,.08);
     }
     button.primary{
-      background: linear-gradient(180deg, rgba(47,109,246,1), rgba(31,77,196,1));
-      border:1px solid rgba(255,255,255,.14);
+      background: url('icon-192.png') center/cover no-repeat;
+      border:2px solid var(--accent);
+      color: var(--accent);
       font-size: 15px;
       font-weight: 800;
       letter-spacing: 1.2px;
       text-transform: uppercase;
       transition: transform 120ms ease, box-shadow 120ms ease;
+      -webkit-text-stroke: 1.5px #0b0c10;
+      text-shadow: 0 2px 6px rgba(0,0,0,.9), 0 0 12px rgba(0,0,0,.5);
+      position: relative;
+      overflow: hidden;
     }
     
     button.primary:active{
@@ -265,7 +270,7 @@
       width:0;height:0;
       border-left:12px solid transparent;
       border-right:12px solid transparent;
-      border-top:18px solid #ffd36a;
+      border-top:18px solid var(--accent);
       filter: drop-shadow(0 6px 10px rgba(0,0,0,.45));
     }
     .result{
@@ -638,6 +643,25 @@
       cursor:pointer;
     }
     .shareClose:hover{ color:var(--text); }
+
+    /* Result icon: logo with arrow */
+    .result-icon{
+      display:inline-block;
+      position:relative;
+      width:22px;
+      height:22px;
+      vertical-align:-4px;
+      margin-right:4px;
+    }
+    .result-icon img{
+      width:100%;height:100%;border-radius:50%;
+    }
+    .result-icon svg{
+      position:absolute;
+      top:-3px;right:-5px;
+      width:14px;height:14px;
+      filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));
+    }
   </style>
 </head>
 <body>
@@ -740,7 +764,10 @@
         <div id="roomOn" style="display:none">
           <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
             <span style="font-size:13px">Room: <strong id="roomCodeDisplay"></strong> <span id="roomPeerCount" style="color:var(--muted);font-size:11px"></span></span>
-            <button type="button" id="leaveRoomBtn" class="inlineBtn ghost" style="font-size:11px;padding:4px 8px;height:auto">Leave</button>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button type="button" id="shareRoomBtn" class="inlineBtn" style="font-size:11px;padding:4px 10px;height:auto">📤 Share</button>
+              <button type="button" id="leaveRoomBtn" class="inlineBtn ghost" style="font-size:11px;padding:4px 8px;height:auto">Leave</button>
+            </div>
           </div>
         </div>
       </div>
@@ -805,6 +832,41 @@
     </div>
   </div>
 
+  <!-- Room share panel -->
+  <div class="shareOverlay" id="roomShareOverlay">
+    <div class="sharePanel">
+      <h3>📤 Share Room Code</h3>
+      <div style="text-align:center;margin-bottom:12px;">
+        <span style="font-size:28px;font-weight:800;letter-spacing:4px;color:var(--accent)" id="roomShareCode"></span>
+      </div>
+      <div class="shareLinkRow">
+        <input type="text" id="roomShareLinkInput" readonly />
+        <button id="roomCopyLinkBtn">Copy</button>
+      </div>
+      <div class="shareSocials" id="roomShareSocials">
+        <a href="#" id="roomShareWhatsApp" target="_blank" rel="noopener" title="WhatsApp" style="background:#25D366;">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.174-.008-.372-.01-.571-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+        <a href="#" id="roomShareX" target="_blank" rel="noopener" title="X (Twitter)" style="background:#000;">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="#" id="roomShareFB" target="_blank" rel="noopener" title="Facebook" style="background:#1877F2;">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="#" id="roomShareTG" target="_blank" rel="noopener" title="Telegram" style="background:#0088cc;">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </a>
+        <a href="#" id="roomShareEmail" target="_blank" rel="noopener" title="Email" style="background:#EA4335;">
+          <svg viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 010 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+        </a>
+        <a href="#" id="roomShareSMS" target="_blank" rel="noopener" title="SMS" style="background:#5BB974;">
+          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
+        </a>
+      </div>
+      <button class="shareClose" id="roomShareClose">Close</button>
+    </div>
+  </div>
+
   <footer style="text-align:center;padding:10px 0 16px;color:rgba(154,163,178,.55);font-size:11px;width:100%;flex-shrink:0;">
     &copy; 2026 WhoDoesIt &mdash; Free &amp; open. No data collected.
   </footer>
@@ -865,6 +927,17 @@
   // wheel rotation state (radians)
   let rotation = 0;
 
+  // ---------- name persistence ----------
+  const NAMES_KEY = 'whodoesit_names';
+  function saveNames(){ try{ localStorage.setItem(NAMES_KEY, JSON.stringify(names)); }catch(e){} }
+  function loadSavedNames(){
+    try{
+      const raw = localStorage.getItem(NAMES_KEY);
+      if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) names = arr; }
+    }catch(e){}
+  }
+  loadSavedNames();
+
   // ---------- helpers ----------
   function getAction(){
     if (actionSelect.value === 'custom') {
@@ -914,6 +987,7 @@
       x.addEventListener('click', () => {
         if(spinning) return;
         names.splice(idx, 1);
+        saveNames();
         renderChips();
         drawWheel();
         updateButtons();
@@ -1320,7 +1394,7 @@
         ctx.moveTo(0,0);
         ctx.arc(0,0,r,start,end);
         ctx.closePath();
-        ctx.fillStyle = 'rgba(255, 211, 106, 0.18)';
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.18)';
         ctx.fill();
         ctx.restore();
       }
@@ -1456,7 +1530,7 @@
         const action = escapeHtml(getAction());
         const winner = escapeHtml(names[chosenIndex]);
 
-        resultEl.innerHTML = `🎯 <strong>${winner}</strong> <span class="verb">${action}</span>.`;
+        resultEl.innerHTML = `<span class="result-icon"><img src="icon-192.png" alt=""><svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="19" x2="18" y2="6" stroke="#9aa3b2" stroke-width="2"/><polygon points="21,3 15,6 18,10" fill="#0b0c10"/><line x1="5" y1="19" x2="1" y2="16" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/><line x1="4" y1="20" x2="1" y2="20" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/></svg></span> <strong>${winner}</strong> <span class="verb">${action}</span>.`;
         lastWinner = names[chosenIndex];
         lastAction = getAction();
         addHistory(names[chosenIndex], getAction());
@@ -1588,7 +1662,7 @@
       // Show result banner immediately
       const safeN = escapeHtml(resultName);
       const safeQ = escapeHtml(resultQ);
-      resultEl.innerHTML = `🎯 <strong>${safeN}</strong> <span class="verb">${safeQ}</span>!`;
+      resultEl.innerHTML = `<span class="result-icon"><img src="icon-192.png" alt=""><svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="19" x2="18" y2="6" stroke="#9aa3b2" stroke-width="2"/><polygon points="21,3 15,6 18,10" fill="#0b0c10"/><line x1="5" y1="19" x2="1" y2="16" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/><line x1="4" y1="20" x2="1" y2="20" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/></svg></span> <strong>${safeN}</strong> <span class="verb">${safeQ}</span>!`;
       lastWinner = resultName;
       lastAction = resultQ;
 
@@ -1710,6 +1784,7 @@
     }
 
     if(added > 0){
+      saveNames();
       renderChips();
       drawWheel();
       updateButtons();
@@ -1736,6 +1811,7 @@
     lastWinner = '';
     lastAction = '';
 
+    saveNames();
     renderChips();
     drawWheel();
     updateButtons();
@@ -1820,6 +1896,7 @@
   window.addEventListener('room:set-names', (e) => {
     const incoming = e.detail.names || [];
     names = incoming.slice();
+    saveNames();
     renderChips();
     drawWheel();
     updateButtons();
@@ -1979,6 +2056,54 @@ if ('serviceWorker' in navigator) {
   joinRoomInput.addEventListener('keydown', e => { if(e.key === 'Enter') joinRoom(joinRoomInput.value); });
   leaveRoomBtn.addEventListener('click', leaveRoom);
 
+  // Room share panel logic
+  const shareRoomBtn = document.getElementById('shareRoomBtn');
+  const roomShareOverlay = document.getElementById('roomShareOverlay');
+
+  function shareRoom(){
+    if(!roomCode) return;
+    const base = location.origin + location.pathname;
+    const url = `${base}?room=${roomCode}`;
+    const text = `Join my WhoDoesIt room! Code: ${roomCode}`;
+    const encodedURL = encodeURIComponent(url);
+    const encodedText = encodeURIComponent(text);
+
+    document.getElementById('roomShareCode').textContent = roomCode;
+    document.getElementById('roomShareLinkInput').value = url;
+
+    document.getElementById('roomShareWhatsApp').href = `https://wa.me/?text=${encodedText}%20${encodedURL}`;
+    document.getElementById('roomShareX').href = `https://x.com/intent/tweet?text=${encodedText}&url=${encodedURL}`;
+    document.getElementById('roomShareFB').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedURL}`;
+    document.getElementById('roomShareTG').href = `https://t.me/share/url?url=${encodedURL}&text=${encodedText}`;
+    document.getElementById('roomShareEmail').href = `mailto:?subject=${encodeURIComponent('Join my WhoDoesIt Room')}&body=${encodedText}%0A${encodedURL}`;
+    document.getElementById('roomShareSMS').href = `sms:?body=${encodedText}%20${encodedURL}`;
+
+    roomShareOverlay.classList.add('open');
+  }
+
+  shareRoomBtn.addEventListener('click', shareRoom);
+
+  document.getElementById('roomCopyLinkBtn').addEventListener('click', () => {
+    const inp = document.getElementById('roomShareLinkInput');
+    inp.select();
+    navigator.clipboard.writeText(inp.value).then(() => {
+      const btn = document.getElementById('roomCopyLinkBtn');
+      btn.textContent = '\u2705 Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    }).catch(() => { document.execCommand('copy'); });
+  });
+
+  document.getElementById('roomShareClose').addEventListener('click', () => {
+    roomShareOverlay.classList.remove('open');
+  });
+  roomShareOverlay.addEventListener('click', (e) => {
+    if(e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+  });
+
+  // Auto-join room from URL param
+  const urlRoom = new URLSearchParams(location.search).get('room');
+  if(urlRoom) joinRoom(urlRoom);
+
   // Listen for sync events from room peers
   window.addEventListener('room:sync', (e) => {
     const { names, action, customAction: ca } = e.detail;
@@ -2003,7 +2128,7 @@ if ('serviceWorker' in navigator) {
     const { winner, action } = e.detail;
     const resultEl = document.getElementById('result');
     const escapeHtml = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    resultEl.innerHTML = `🎯 <strong>${escapeHtml(winner)}</strong> <span class="verb">${escapeHtml(action)}</span>.`;
+    resultEl.innerHTML = `<span class="result-icon"><img src="icon-192.png" alt=""><svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="19" x2="18" y2="6" stroke="#9aa3b2" stroke-width="2"/><polygon points="21,3 15,6 18,10" fill="#0b0c10"/><line x1="5" y1="19" x2="1" y2="16" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/><line x1="4" y1="20" x2="1" y2="20" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/></svg></span> <strong>${escapeHtml(winner)}</strong> <span class="verb">${escapeHtml(action)}</span>.`;
   });
 })();
 </script>
